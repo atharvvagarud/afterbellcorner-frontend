@@ -45,5 +45,11 @@ header h1 {
 
 header button {
   font-size: 0.9rem;
+  display: flex;           
+  align-items: center;     
+  gap: 0.4rem;             
+  cursor: not-allowed;
 }
+
+
 </style>
