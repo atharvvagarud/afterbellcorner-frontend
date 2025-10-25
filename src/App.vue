@@ -3,15 +3,25 @@
     <header>
       <h1>{{ sitename }}</h1>
       
-      <button disabled>
-        0
+      <button @click="toggleCheckout">
+        {{ cartItemCount }}
         <span class="fas fa-cart-plus"></span>
         Checkout
       </button>
     </header>
 
     <main>
-      <p>App running...</p>
+      
+      <div v-if="showProduct">
+        <h2>Available Sessions (placeholder)</h2>
+        <p>render lessons here later</p>
+      </div>
+
+      <div v-else>
+        <h2>Cart / Checkout (placeholder)</h2>
+        <p>render cart here later</p>
+      </div>
+
     </main>
   </div>
 </template>
@@ -23,9 +33,24 @@ export default {
     return {
       
       sitename: "After Bell Corner",
+
+      showProduct: true,
+
+      cart: [],
     };
   },
+  computed: {
+    cartItemCount() {
+      return this.cart.length || "";
+    },
+  },
+  methods: {
+    toggleCheckout() {
+      this.showProduct = !this.showProduct;
+    },
+  },
 };
+
 </script>
 
 <style scoped>
@@ -45,10 +70,10 @@ header h1 {
 
 header button {
   font-size: 0.9rem;
-  display: flex;           
-  align-items: center;     
-  gap: 0.4rem;             
-  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
 }
 
 
