@@ -14,10 +14,15 @@
       
         <ProductList
         v-if="showProduct"
-        :products="products"
+        :products="sortedProducts"
         :cartCount="cartCount"
         :canAddToCart="canAddToCart"
         @add-to-cart="addToCart"
+
+        :sort-attribute="sortAttribute"
+        :sort-order="sortOrder"
+        @update-sort-attribute="val => sortAttribute = val"
+        @update-sort-order="val => sortOrder = val"
       />
 
       <div v-else>
@@ -74,13 +79,38 @@ export default {
         },
       
       ],
-
+      sortAttribute: "price",  
+      sortOrder: "asc",        
     };
   },
   computed: {
     cartItemCount() {
       return this.cart.length || "";
     },
+    sortedProducts() {
+      const arr = [...this.products];
+      const attr = this.sortAttribute;
+      const dir = this.sortOrder;
+
+      arr.sort((a, b) => {
+        let A = a[attr];
+        let B = b[attr];
+
+        if (typeof A === "string" && typeof B === "string") {
+          A = A.toLowerCase();
+          B = B.toLowerCase();
+          if (A < B) return dir === "asc" ? -1 : 1;
+          if (A > B) return dir === "asc" ? 1 : -1;
+          return 0;
+        } else {
+          if (A < B) return dir === "asc" ? -1 : 1;
+          if (A > B) return dir === "asc" ? 1 : -1;
+          return 0;
+        }
+      });
+
+      return arr;
+    }
   },
   methods: {
     toggleCheckout() {
@@ -102,11 +132,9 @@ export default {
       if (this.canAddToCart(product)) {
         this.cart.push(product.id);
       }
-
-  },
-}
+    }
+  }
 };
-
 </script>
 
 <style scoped>

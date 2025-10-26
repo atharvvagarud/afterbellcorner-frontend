@@ -1,5 +1,29 @@
 <template>
   <div>
+
+    <div class="sort-row">
+      <label for="sortAttribute">Sort by:</label>
+      <select
+        id="sortAttribute"
+        :value="sortAttribute"
+        @change="$emit('update-sort-attribute', $event.target.value)"
+      >
+        <option value="price">Price</option>
+        <option value="title">Title</option>
+        <option value="availableInventory">Availability</option>
+      </select>
+
+      <label class="sort-order-label" for="sortOrder">Order:</label>
+      <select
+        id="sortOrder"
+        :value="sortOrder"
+        @change="$emit('update-sort-order', $event.target.value)"
+      >
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+      </select>
+    </div>
+
     <section class="lessons">
       <article
         v-for="product in products"
@@ -71,10 +95,11 @@ export default {
   props: {
     
     products: Array,
-
-    
     cartCount: Function,
     canAddToCart: Function,
+
+    sortAttribute: String,
+    sortOrder: String,
   },
 };
 </script>

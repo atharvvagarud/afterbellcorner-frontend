@@ -48,3 +48,15 @@ main h2 {
   font-size: 0.8rem;
   margin-top: 0.5rem;
 }
+
+.sort-row {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+.sort-row label {
+  margin-right: 0.5rem;
+  font-weight: bold;
+}
+.sort-order-label {
+  margin-left: 1rem;
+}
