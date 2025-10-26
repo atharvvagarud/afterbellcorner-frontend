@@ -12,10 +12,13 @@
 
     <main>
       
-      <div v-if="showProduct">
-        <h2>Available Sessions (placeholder)</h2>
-        <p>render lessons here later</p>
-      </div>
+        <ProductList
+        v-if="showProduct"
+        :products="products"
+        :cartCount="cartCount"
+        :canAddToCart="canAddToCart"
+        @add-to-cart="addToCart"
+      />
 
       <div v-else>
         <h2>Cart / Checkout (placeholder)</h2>
@@ -27,8 +30,14 @@
 </template>
 
 <script>
+import ProductList from "./components/ProductList.vue";
+
 export default {
   name: "App",
+  components: {
+    ProductList
+  },
+
   data() {
     return {
       
@@ -37,6 +46,35 @@ export default {
       showProduct: true,
 
       cart: [],
+
+      products: [
+        {
+          id: 1001,
+          title: "Maths Booster Session",
+          description: "Focused small-group support for exam topics.",
+          price: 20,
+          availableInventory: 5,
+          rating: 4,
+        },
+        {
+          id: 1002,
+          title: "Science Lab Club",
+          description: "Hands-on experiments and safety basics.",
+          price: 25,
+          availableInventory: 3,
+          rating: 5,
+        },
+        {
+          id: 1003,
+          title: "Creative Writing Workshop",
+          description: "Storycraft, characters, and confidence.",
+          price: 15,
+          availableInventory: 10,
+          rating: 3,
+        },
+      
+      ],
+
     };
   },
   computed: {
@@ -48,7 +86,25 @@ export default {
     toggleCheckout() {
       this.showProduct = !this.showProduct;
     },
+    cartCount(id) {
+      let count = 0;
+      for (let i = 0; i < this.cart.length; i++) {
+        if (this.cart[i] === id) {
+          count++;
+        }
+      }
+      return count;
+    },
+    canAddToCart(product) {
+      return product.availableInventory > this.cartCount(product.id);
+    },
+    addToCart(product) {
+      if (this.canAddToCart(product)) {
+        this.cart.push(product.id);
+      }
+
   },
+}
 };
 
 </script>
