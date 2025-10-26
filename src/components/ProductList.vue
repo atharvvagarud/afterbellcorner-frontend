@@ -15,6 +15,39 @@
           <p>{{ product.description }}</p>
           <p>Price: £{{ product.price }}</p>
 
+           <div class="rating">
+            <span
+              v-for="n in product.rating"
+              :key="product.id + '-full-' + n"
+            >
+              ★
+            </span>
+            <span
+              v-for="n in 5 - product.rating"
+              :key="product.id + '-empty-' + n"
+            >
+              ☆
+            </span>
+          </div>
+
+           <p class="inventory-msg">
+            <span v-if="product.availableInventory === cartCount(product.id)">
+              All out!
+            </span>
+
+            <span
+              v-else-if="product.availableInventory - cartCount(product.id) < 5"
+            >
+              Only
+              {{ product.availableInventory - cartCount(product.id) }}
+              left!
+            </span>
+
+            <span v-else>
+              Buy now!
+            </span>
+          </p>
+
           <!-- Button respects inventory -->
           <button
             :disabled="!canAddToCart(product)"
@@ -73,6 +106,20 @@ export default {
   margin: 0 0 0.5rem 0;
   font-size: 1.1rem;
 }
+
+.rating {
+  color: #ffbf00;
+  font-size: 0.9rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.inventory-msg {
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
 
 .in-cart-label {
   font-size: 0.8rem;

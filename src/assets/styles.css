@@ -4,3 +4,47 @@ body {
   margin: 2rem auto;
   line-height: 1.4;
 }
+
+
+main .product-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+main .product-image {
+  width: 120px;
+  height: 120px;
+  background: #f3f3f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: #555;
+}
+
+main h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+/* pulled in from ProductList.vue */
+.rating {
+  color: #ffbf00;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.inventory-msg {
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.in-cart-label {
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
