@@ -77,3 +77,9 @@ main h2 {
 .cart-qty {
   text-align: right;
 }
+
+/* checkout view polish */
+.back-hint {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}

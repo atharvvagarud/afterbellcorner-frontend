@@ -30,6 +30,11 @@
         :cart="cart"
         :cartProducts="cartProducts"
         :cartCount="cartCount"
+        :order="order"
+        :checkoutReady="checkoutReady"
+        @update-name="val => order.firstName = val"
+        @update-phone="val => order.phone = val"
+        @place-order="placeOrder"
       />
 
     </main>
@@ -52,6 +57,7 @@ export default {
       sitename: "After Bell Corner",
       showProduct: true,
       cart: [],
+      
       products: [
         {
           id: 1001,
@@ -76,10 +82,15 @@ export default {
           price: 15,
           availableInventory: 10,
           rating: 3,
-        },
+        }
       ],
       sortAttribute: "price",
       sortOrder: "asc",
+      
+      order: {
+        firstName: "",
+        phone: "",
+      },
     };
   },
   computed: {
@@ -115,9 +126,16 @@ export default {
       });
 
       return arr;
-    }
+    },
+    checkoutReady() {
+      const nameOk = /^[A-Za-z]+$/.test(this.order.firstName);
+      const phoneOk = /^[0-9]+$/.test(String(this.order.phone));
+      const hasItems = this.cart.length > 0;
+      return nameOk && phoneOk && hasItems;
+    },
   },
-  methods: {
+  
+methods: {
     toggleCheckout() {
       this.showProduct = !this.showProduct;
     },
@@ -137,7 +155,19 @@ export default {
       if (this.canAddToCart(product)) {
         this.cart.push(product.id);
       }
-    }
+    },
+    placeOrder() {
+      if (!this.checkoutReady) return;
+
+      alert("Order placed! 🎉");
+
+      this.order.firstName = "";
+      this.order.phone = "";
+
+      this.cart = [];
+
+      this.showProduct = true;
+    },
   }
 };
 </script>
