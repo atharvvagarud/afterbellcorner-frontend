@@ -1,3 +1,5 @@
+/* GLOBAL LAYOUT -------------------------------------------------- */
+
 body {
   font-family: system-ui, Arial, sans-serif;
   max-width: 900px;
@@ -5,6 +7,7 @@ body {
   line-height: 1.4;
 }
 
+/* PRODUCT LIST / CARDS ------------------------------------------- */
 
 main .product-card {
   border: 1px solid #ddd;
@@ -31,24 +34,27 @@ main h2 {
   font-size: 1.1rem;
 }
 
-/* pulled in from ProductList.vue */
+/* Rating stars */
 .rating {
   color: #ffbf00;
   font-size: 0.9rem;
   line-height: 1;
 }
 
+/* Stock / availability messaging */
 .inventory-msg {
   font-size: 0.8rem;
   font-weight: bold;
   margin-top: 0.5rem;
 }
 
+/* Quantity in cart next to product */
 .in-cart-label {
   font-size: 0.8rem;
   margin-top: 0.5rem;
 }
 
+/* Sorting UI */
 .sort-row {
   margin-bottom: 1rem;
   font-size: 0.9rem;
@@ -62,7 +68,8 @@ main h2 {
 }
 
 
-/* basic cart list styling */
+/* CART VIEW / CHECKOUT ------------------------------------------ */
+
 .cart-list-item {
   border-bottom: 1px solid #ddd;
   padding: 0.5rem 0;
@@ -78,7 +85,7 @@ main h2 {
   text-align: right;
 }
 
-/* checkout view polish */
+/* Checkout footer hint text */
 .back-hint {
   margin-top: 1rem;
   font-size: 0.9rem;
