@@ -25,10 +25,12 @@
         @update-sort-order="val => sortOrder = val"
       />
 
-      <div v-else>
-        <h2>Cart / Checkout (placeholder)</h2>
-        <p>render cart here later</p>
-      </div>
+      <CartView
+        v-else
+        :cart="cart"
+        :cartProducts="cartProducts"
+        :cartCount="cartCount"
+      />
 
     </main>
   </div>
@@ -36,22 +38,20 @@
 
 <script>
 import ProductList from "./components/ProductList.vue";
+import CartView from "./components/CartView.vue";
 
 export default {
   name: "App",
   components: {
-    ProductList
+    ProductList,
+    CartView
   },
 
   data() {
     return {
-      
       sitename: "After Bell Corner",
-
       showProduct: true,
-
       cart: [],
-
       products: [
         {
           id: 1001,
@@ -77,15 +77,20 @@ export default {
           availableInventory: 10,
           rating: 3,
         },
-      
       ],
-      sortAttribute: "price",  
-      sortOrder: "asc",        
+      sortAttribute: "price",
+      sortOrder: "asc",
     };
   },
   computed: {
     cartItemCount() {
       return this.cart.length || "";
+    },
+     cartProducts() {
+      const uniqueIds = [...new Set(this.cart)];
+      return uniqueIds
+        .map(id => this.products.find(p => p.id === id))
+        .filter(Boolean);
     },
     sortedProducts() {
       const arr = [...this.products];

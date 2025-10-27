@@ -60,3 +60,20 @@ main h2 {
 .sort-order-label {
   margin-left: 1rem;
 }
+
+
+/* basic cart list styling */
+.cart-list-item {
+  border-bottom: 1px solid #ddd;
+  padding: 0.5rem 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cart-price {
+  font-size: 0.8rem;
+}
+
+.cart-qty {
+  text-align: right;
+}
