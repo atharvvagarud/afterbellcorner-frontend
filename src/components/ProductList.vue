@@ -1,6 +1,17 @@
 <template>
   <div>
 
+     <div class="search-row">
+      <label for="searchTerm">Search:</label>
+      <input
+        id="searchTerm"
+        type="text"
+        :value="searchTerm"
+        @input="$emit('update-search-term', $event.target.value)"
+        placeholder="Search by subject or location"
+      />
+    </div>
+
     <div class="sort-row">
       <label for="sortAttribute">Sort by:</label>
     
@@ -119,6 +130,7 @@ export default {
     spacesLeft: Function,
     sortAttribute: String,
     sortOrder: String,
+    searchTerm: String,
   },
 };
 </script>
@@ -173,5 +185,21 @@ export default {
 .lesson-icon {
   margin-right: 0.4rem;
 }
+
+.search-row {
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.search-row label {
+  margin-right: 0.5rem;
+  font-weight: bold;
+}
+
+.search-row input {
+  padding: 0.2rem 0.4rem;
+  font-size: 0.9rem;
+}
+
 
 </style>

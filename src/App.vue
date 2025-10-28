@@ -20,15 +20,19 @@
       
         <ProductList
           v-if="showProduct"
-          :products="sortedProducts"
+          :products="filteredProducts"
           :cartCount="cartCount"
           :canAddToCart="canAddToCart"
           :spacesLeft="spacesLeft"
           @add-to-cart="addToCart"
+
           :sort-attribute="sortAttribute"
           :sort-order="sortOrder"
           @update-sort-attribute="val => sortAttribute = val"
           @update-sort-order="val => sortOrder = val"
+
+          :search-term="searchTerm"
+          @update-search-term="val => searchTerm = val"
         />
 
       <CartView
@@ -174,6 +178,7 @@ export default {
       sortAttribute: "subject",
       sortOrder: "asc",
 
+      searchTerm: "",
       
       // order = checkout form data.
       // firstName must be letters only.
@@ -238,6 +243,28 @@ sortedProducts() {
   });
 
   return arr;
+},
+
+filteredProducts() {
+  // start from the sorted list
+  const list = this.sortedProducts;
+
+  // if search box is empty, show everything
+  if (!this.searchTerm) {
+    return list;
+  }
+
+  const term = this.searchTerm.toLowerCase();
+
+  // filter by subject (title) OR location
+  return list.filter((product) => {
+    const subject = product.title?.toLowerCase() || "";
+    const location = product.location?.toLowerCase() || "";
+    return (
+      subject.includes(term) ||
+      location.includes(term)
+    );
+  });
 },
 
     // The "Place Order" button is only enabled if:
