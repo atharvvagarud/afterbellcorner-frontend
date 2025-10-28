@@ -50,10 +50,8 @@
 
           <p><strong>Location:</strong> {{ product.location }}</p>
           <p><strong>Price:</strong> £{{ product.price }}</p>
-          <p>
-            <strong>Spaces:</strong>
-            {{ product.availableInventory - cartCount(product.id) }}
-          </p>
+          <p> <strong>Spaces:</strong> {{ spacesLeft(product) }} </p>
+
 
            <div class="rating">
             <span
@@ -70,16 +68,15 @@
             </span>
           </div>
 
-           <p class="inventory-msg">
-            <span v-if="product.availableInventory === cartCount(product.id)">
-              All out!
+          <p class="inventory-msg">
+              
+            <span v-if="spacesLeft(product) === 0">
+               All out!
             </span>
 
-            <span
-              v-else-if="product.availableInventory - cartCount(product.id) < 5"
-            >
+            <span v-else-if="spacesLeft(product) < 5">
               Only
-              {{ product.availableInventory - cartCount(product.id) }}
+              {{ spacesLeft(product) }}
               left!
             </span>
 
@@ -116,11 +113,10 @@
 export default {
   name: "ProductList",
   props: {
-    
     products: Array,
     cartCount: Function,
     canAddToCart: Function,
-
+    spacesLeft: Function,
     sortAttribute: String,
     sortOrder: String,
   },

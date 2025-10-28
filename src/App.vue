@@ -13,17 +13,17 @@
     <main>
       
         <ProductList
-        v-if="showProduct"
-        :products="sortedProducts"
-        :cartCount="cartCount"
-        :canAddToCart="canAddToCart"
-        @add-to-cart="addToCart"
-
-        :sort-attribute="sortAttribute"
-        :sort-order="sortOrder"
-        @update-sort-attribute="val => sortAttribute = val"
-        @update-sort-order="val => sortOrder = val"
-      />
+          v-if="showProduct"
+          :products="sortedProducts"
+          :cartCount="cartCount"
+          :canAddToCart="canAddToCart"
+          :spacesLeft="spacesLeft"
+          @add-to-cart="addToCart"
+          :sort-attribute="sortAttribute"
+          :sort-order="sortOrder"
+          @update-sort-attribute="val => sortAttribute = val"
+          @update-sort-order="val => sortOrder = val"
+        />
 
       <CartView
         v-else
@@ -262,8 +262,14 @@ methods: {
       }
       return count;
     },
+
+    spacesLeft(product) {
+      const left = product.availableInventory - this.cartCount(product.id);
+      return left < 0 ? 0 : left;
+    },
+
     canAddToCart(product) {
-      return product.availableInventory > this.cartCount(product.id);
+      return this.spacesLeft(product) > 0;
     },
 
     // Called when "Add to Cart" is clicked in ProductList
