@@ -3,11 +3,17 @@
     <header>
       <h1>{{ sitename }}</h1>
       
-      <button @click="toggleCheckout">
-        {{ cartItemCount }}
-        <span class="fas fa-cart-plus"></span>
-        Checkout
-      </button>
+  <button
+    @click="toggleCheckout"
+    :disabled="cart.length === 0 && showProduct"
+    :title="cart.length === 0 && showProduct
+    ? 'Add at least one session to view your cart'
+    : 'View cart / checkout'"
+  >
+    {{ cartItemCount }}
+    <span class="fas fa-cart-plus"></span>
+    Checkout
+  </button>
     </header>
 
     <main>
@@ -35,6 +41,7 @@
         @update-name="val => order.firstName = val"
         @update-phone="val => order.phone = val"
         @place-order="placeOrder"
+        @remove-one="removeFromCart"
       />
 
     </main>
@@ -276,6 +283,13 @@ methods: {
     addToCart(product) {
       if (this.canAddToCart(product)) {
         this.cart.push(product.id);
+      }
+    },
+
+    removeFromCart(product) {
+      const idx = this.cart.indexOf(product.id);
+      if (idx !== -1) {
+      this.cart.splice(idx, 1);
       }
     },
 

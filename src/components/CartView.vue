@@ -17,6 +17,9 @@
 
       <div class="cart-qty">
         Qty: {{ cartCount(product.id) }}
+      <button @click="$emit('remove-one', product)">
+      Remove one
+      </button>
       </div>
     </div>
 
@@ -88,5 +91,11 @@ export default {
 
 .cart-qty {
   text-align: right;
+}
+
+.cart-qty button {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  padding: 0.1rem 0.4rem;
 }
 </style>
