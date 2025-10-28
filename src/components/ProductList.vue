@@ -35,9 +35,22 @@
         </div>
 
         <div class="product-info">
-          <h2>{{ product.title }}</h2>
+
+          <!-- Subject + Icon -->
+          <h2>
+              <span class="fas fa-chalkboard-teacher lesson-icon"></span>
+              {{ product.title }}
+          </h2>
+
           <p>{{ product.description }}</p>
-          <p>Price: £{{ product.price }}</p>
+
+
+          <p><strong>Location:</strong> {{ product.location }}</p>
+          <p><strong>Price:</strong> £{{ product.price }}</p>
+          <p>
+            <strong>Spaces:</strong>
+            {{ product.availableInventory - cartCount(product.id) }}
+          </p>
 
            <div class="rating">
             <span
@@ -72,10 +85,17 @@
             </span>
           </p>
 
-          <!-- Button respects inventory -->
-          <button
-            :disabled="!canAddToCart(product)"
+         <button
+            v-if="canAddToCart(product)"
             @click="$emit('add-to-cart', product)"
+          >
+            Add to Cart
+          </button>
+
+          <button
+            v-else
+            disabled="disabled"
+            title="No spaces left for this session"
           >
             Add to Cart
           </button>
@@ -150,4 +170,9 @@ export default {
   font-size: 0.8rem;
   margin-top: 0.5rem;
 }
+
+.lesson-icon {
+  margin-right: 0.4rem;
+}
+
 </style>
