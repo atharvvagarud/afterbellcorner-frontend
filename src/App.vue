@@ -55,9 +55,18 @@ export default {
   data() {
     return {
       sitename: "After Bell Corner",
+
+      // showProduct === true  -> user is browsing sessions
+      // showProduct === false -> user is in the cart / checkout screen
       showProduct: true,
+
+      // cart is just an array of product IDs.
+      // Quantity of an item = how many times that ID appears.
       cart: [],
       
+      // Hard-coded "lessons" / "products" data.
+      // availableInventory is used to limit how many can be added.
+      // rating is used to render ★★★★☆ in ProductList.
       products: [
         {
           id: 1001,
@@ -84,9 +93,16 @@ export default {
           rating: 3,
         }
       ],
+      
+      // sorting controls for ProductList.
+      // sortAttribute is which field we sort by (price/title/availableInventory)
+      // sortOrder is 'asc' or 'desc'
       sortAttribute: "price",
       sortOrder: "asc",
       
+      // order = checkout form data.
+      // firstName must be letters only.
+      // phone must be digits only.
       order: {
         firstName: "",
         phone: "",
@@ -103,6 +119,10 @@ export default {
         .map(id => this.products.find(p => p.id === id))
         .filter(Boolean);
     },
+
+    // sortedProducts returns the products array sorted
+    // by whatever dropdown is chosen in ProductList
+    // (price/title/availableInventory + asc/desc).
     sortedProducts() {
       const arr = [...this.products];
       const attr = this.sortAttribute;
@@ -127,6 +147,11 @@ export default {
 
       return arr;
     },
+
+    // The "Place Order" button is only enabled if:
+    //   - firstName is only letters
+    //   - phone is only numbers
+    //   - there is at least one item in the cart
     checkoutReady() {
       const nameOk = /^[A-Za-z]+$/.test(this.order.firstName);
       const phoneOk = /^[0-9]+$/.test(String(this.order.phone));
@@ -136,9 +161,13 @@ export default {
   },
   
 methods: {
+
+    // Toggle between product browsing vs. checkout view
     toggleCheckout() {
       this.showProduct = !this.showProduct;
     },
+
+    // Returns how many of a given product ID are currently in cart
     cartCount(id) {
       let count = 0;
       for (let i = 0; i < this.cart.length; i++) {
@@ -151,21 +180,29 @@ methods: {
     canAddToCart(product) {
       return product.availableInventory > this.cartCount(product.id);
     },
+
+    // Called when "Add to Cart" is clicked in ProductList
     addToCart(product) {
       if (this.canAddToCart(product)) {
         this.cart.push(product.id);
       }
     },
+
+    // placeOrder is passed to CartView and runs when the
+    // user clicks "Place Order". It also resets the app.
     placeOrder() {
       if (!this.checkoutReady) return;
 
       alert("Order placed! 🎉");
 
+      // clear form data
       this.order.firstName = "";
       this.order.phone = "";
 
+      // clear all items in cart
       this.cart = [];
 
+      // jump back to product browsing
       this.showProduct = true;
     },
   }
@@ -194,6 +231,5 @@ header button {
   gap: 0.4rem;
   cursor: pointer;
 }
-
 
 </style>
