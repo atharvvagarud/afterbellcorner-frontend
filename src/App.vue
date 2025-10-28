@@ -164,8 +164,9 @@ export default {
       // sorting controls for ProductList.
       // sortAttribute is which field we sort by (price/title/availableInventory)
       // sortOrder is 'asc' or 'desc'
-      sortAttribute: "price",
+      sortAttribute: "subject",
       sortOrder: "asc",
+
       
       // order = checkout form data.
       // firstName must be letters only.
@@ -187,33 +188,50 @@ export default {
         .filter(Boolean);
     },
 
-    // sortedProducts returns the products array sorted
-    // by whatever dropdown is chosen in ProductList
-    // (price/title/availableInventory + asc/desc).
-    sortedProducts() {
-      const arr = [...this.products];
-      const attr = this.sortAttribute;
-      const dir = this.sortOrder;
 
-      arr.sort((a, b) => {
-        let A = a[attr];
-        let B = b[attr];
+sortedProducts() {
+  const arr = [...this.products];
+  const attr = this.sortAttribute;
+  const dir = this.sortOrder;
 
-        if (typeof A === "string" && typeof B === "string") {
-          A = A.toLowerCase();
-          B = B.toLowerCase();
-          if (A < B) return dir === "asc" ? -1 : 1;
-          if (A > B) return dir === "asc" ? 1 : -1;
-          return 0;
-        } else {
-          if (A < B) return dir === "asc" ? -1 : 1;
-          if (A > B) return dir === "asc" ? 1 : -1;
-          return 0;
-        }
-      });
+  arr.sort((a, b) => {
+    let A;
+    let B;
 
-      return arr;
-    },
+    if (attr === "subject") {
+      A = a.title;
+      B = b.title;
+    } else if (attr === "location") {
+      A = a.location;
+      B = b.location;
+    } else if (attr === "price") {
+      A = a.price;
+      B = b.price;
+    } else if (attr === "spaces") {
+     
+      A = a.availableInventory - this.cartCount(a.id);
+      B = b.availableInventory - this.cartCount(b.id);
+    } else {
+      
+      return 0;
+    }
+
+    
+    if (typeof A === "string" && typeof B === "string") {
+      A = A.toLowerCase();
+      B = B.toLowerCase();
+      if (A < B) return dir === "asc" ? -1 : 1;
+      if (A > B) return dir === "asc" ? 1 : -1;
+      return 0;
+    } else {
+      if (A < B) return dir === "asc" ? -1 : 1;
+      if (A > B) return dir === "asc" ? 1 : -1;
+      return 0;
+    }
+  });
+
+  return arr;
+},
 
     // The "Place Order" button is only enabled if:
     //   - firstName is only letters

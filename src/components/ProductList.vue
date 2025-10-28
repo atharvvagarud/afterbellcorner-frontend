@@ -3,14 +3,17 @@
 
     <div class="sort-row">
       <label for="sortAttribute">Sort by:</label>
+    
       <select
         id="sortAttribute"
         :value="sortAttribute"
         @change="$emit('update-sort-attribute', $event.target.value)"
       >
+      
+        <option value="subject">Subject</option>
+        <option value="location">Location</option>
         <option value="price">Price</option>
-        <option value="title">Title</option>
-        <option value="availableInventory">Availability</option>
+        <option value="spaces">Spaces</option>
       </select>
 
       <label class="sort-order-label" for="sortOrder">Order:</label>
