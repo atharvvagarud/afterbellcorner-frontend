@@ -99,6 +99,7 @@
          <button
             v-if="canAddToCart(product)"
             @click="$emit('add-to-cart', product)"
+            aria-label="Add {{ product.title }} to cart"
           >
             Add to Cart
           </button>
@@ -107,6 +108,7 @@
             v-else
             disabled="disabled"
             title="No spaces left for this session"
+            aria-label="No spaces left for {{ product.title }}"
           >
             Add to Cart
           </button>
@@ -201,5 +203,26 @@ export default {
   font-size: 0.9rem;
 }
 
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+button:not(:disabled):hover {
+  background-color: #333;
+  color: white;
+  transform: scale(1.03);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.empty-cart-msg {
+  text-align: center;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #666;
+}
 
 </style>

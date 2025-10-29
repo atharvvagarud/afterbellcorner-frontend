@@ -15,17 +15,22 @@
         </div>
       </div>
 
-      <div class="cart-qty">
+    <div class="cart-qty">
         Qty: {{ cartCount(product.id) }}
-      <button @click="$emit('remove-one', product)">
+      <button
+        @click="$emit('remove-one', product)"
+        aria-label="Remove one of {{ product.title }} from cart"
+        title="Remove one item"
+      >
       Remove one
       </button>
-      </div>
+    </div>
     </div>
 
-    <p v-if="cart.length === 0">
+    <p v-if="cart.length === 0" class="empty-cart-msg">
       Your cart is empty.
     </p>
+
 
     <hr />
 
@@ -97,5 +102,27 @@ export default {
   margin-left: 0.5rem;
   font-size: 0.8rem;
   padding: 0.1rem 0.4rem;
+}
+
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+button:not(:disabled):hover {
+  background-color: #333;
+  color: white;
+  transform: scale(1.03);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.empty-cart-msg {
+  text-align: center;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #666;
 }
 </style>
