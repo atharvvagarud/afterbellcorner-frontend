@@ -18,22 +18,33 @@
 
     <main>
       
-        <ProductList
-          v-if="showProduct"
-          :products="filteredProducts"
-          :cartCount="cartCount"
-          :canAddToCart="canAddToCart"
-          :spacesLeft="spacesLeft"
-          @add-to-cart="addToCart"
+       <!-- LESSONS / PRODUCT LIST VIEW -->
+  <div v-if="showProduct">
 
-          :sort-attribute="sortAttribute"
-          :sort-order="sortOrder"
-          @update-sort-attribute="val => sortAttribute = val"
-          @update-sort-order="val => sortOrder = val"
+        <p v-if="isLoadingLessons" class="loading-msg">
+          Loading lessons...
+        </p>
 
-          :search-term="searchTerm"
-          @update-search-term="val => searchTerm = val"
-        />
+        <p v-else-if="loadLessonsError" class="error-msg">
+          {{ loadLessonsError }}
+        </p>
+
+    <ProductList
+      v-else
+      :products="filteredProducts"
+      :cartCount="cartCount"
+      :canAddToCart="canAddToCart"
+      :spacesLeft="spacesLeft"
+      @add-to-cart="addToCart"
+      :sort-attribute="sortAttribute"
+      :sort-order="sortOrder"
+      @update-sort-attribute="val => (sortAttribute = val)"
+      @update-sort-order="val => (sortOrder = val)"
+      :search-term="searchTerm"
+      @update-search-term="val => (searchTerm = val)"
+    />
+  </div>
+
 
       <CartView
         v-else
@@ -67,6 +78,12 @@ export default {
     return {
       sitename: "After Bell Corner",
 
+      products: [],
+
+      // simple loading + error state for lessons fetch
+      isLoadingLessons: true,
+      loadLessonsError: null,
+
       // showProduct === true  -> user is browsing sessions
       // showProduct === false -> user is in the cart / checkout screen
       showProduct: true,
@@ -74,103 +91,6 @@ export default {
       // cart is just an array of product IDs.
       // Quantity of an item = how many times that ID appears.
       cart: [],
-      
-      // Hard-coded "lessons" / "products" data.
-      // availableInventory is used to limit how many can be added.
-      // rating is used to render ★★★★☆ in ProductList.
-      products: [
-      {
-        id: 1001,
-        title: "Maths Booster Session",
-        description: "Focused small-group support for core exam skills.",
-        price: 20,
-        availableInventory: 5,
-        rating: 4,
-        location: "Room 101",
-      },
-      {
-        id: 1002,
-        title: "Science Lab Club",
-        description: "Hands-on experiments with safety guidance.",
-        price: 25,
-        availableInventory: 5,
-        rating: 5,
-        location: "Lab 2",
-      },
-      {
-        id: 1003,
-        title: "Creative Writing Workshop",
-        description: "Storycraft, characters, and confidence building.",
-        price: 15,
-        availableInventory: 5,
-        rating: 3,
-        location: "Library",
-      },
-      {
-        id: 1004,
-        title: "After-School Coding Club",
-        description: "Intro to programming with puzzles and games.",
-        price: 18,
-        availableInventory: 5,
-        rating: 4,
-        location: "ICT Suite",
-      },
-      {
-        id: 1005,
-        title: "Art & Design Studio",
-        description: "Painting, sketching and creative techniques.",
-        price: 22,
-        availableInventory: 5,
-        rating: 5,
-        location: "Art Room",
-      },
-      {
-        id: 1006,
-        title: "History Revision Clinic",
-        description: "Key events, timelines and exam tips.",
-        price: 17,
-        availableInventory: 5,
-        rating: 4,
-        location: "Room 204",
-      },
-      {
-        id: 1007,
-        title: "Geography Field Skills",
-        description: "Maps, fieldwork techniques and case studies.",
-        price: 19,
-        availableInventory: 5,
-        rating: 4,
-        location: "Geography Room",
-      },
-      {
-        id: 1008,
-        title: "English Literature Circle",
-        description: "Discussion of key texts and themes.",
-        price: 16,
-        availableInventory: 5,
-        rating: 3,
-        location: "Room 110",
-      },
-      {
-        id: 1009,
-        title: "Music Practice Session",
-        description: "Instrumental practice with guidance.",
-        price: 21,
-        availableInventory: 5,
-        rating: 5,
-        location: "Music Room",
-      },
-      {
-        id: 1010,
-        title: "Exam Stress Toolkit",
-        description: "Study skills, organisation and wellbeing.",
-        price: 14,
-        availableInventory: 5,
-        rating: 4,
-        location: "Wellbeing Hub",
-      },
-    ],
-
       
       // sorting controls for ProductList.
       // sortAttribute is which field we sort by (price/title/availableInventory)
@@ -189,6 +109,12 @@ export default {
       },
     };
   },
+
+  created() {
+    //call the loader as soon as the app is created
+    this.fetchLessons()
+  },
+
   computed: {
     cartItemCount() {
       return this.cart.length || "";
@@ -281,6 +207,26 @@ filteredProducts() {
   
 methods: {
 
+    async fetchLessons() {
+    this.isLoadingLessons = true;
+    this.loadLessonsError = null;
+
+    try {
+      const response = await fetch("http://localhost:3000/lessons");
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      this.products = data;
+    } catch (err) {
+      console.error("Error loading lessons:", err);
+      this.loadLessonsError =
+        "Failed to load lessons from the server. Please try again later.";
+    } finally {
+      this.isLoadingLessons = false;
+    }
+    },
+
     // Toggle between product browsing vs. checkout view
     toggleCheckout() {
       this.showProduct = !this.showProduct;
@@ -362,6 +308,19 @@ header button {
   align-items: center;
   gap: 0.4rem;
   cursor: pointer;
+}
+
+.loading-msg {
+  text-align: center;
+  margin: 1rem 0;
+  font-style: italic;
+}
+
+.error-msg {
+  text-align: center;
+  margin: 1rem 0;
+  color: #c0392b;
+  font-weight: bold;
 }
 
 </style>
