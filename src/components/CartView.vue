@@ -36,6 +36,15 @@
 
     <h3>Checkout Details</h3>
 
+    <!--order messages -->
+    <p v-if="orderSuccessMessage" class="order-success">
+      {{ orderSuccessMessage }}
+    </p>
+    
+    <p v-if="orderErrorMessage" class="order-error">
+      {{ orderErrorMessage }}
+    </p>
+
     <p>
       <strong>Name:</strong>
       <input
@@ -56,10 +65,10 @@
 
     
     <button
+      :disabled="!checkoutReady || isPlacingOrder"
       @click="$emit('place-order')"
-      :disabled="!checkoutReady"
     >
-      Place Order
+      {{ isPlacingOrder ? "Placing order..." : "Place Order" }}
     </button>
 
     <p class="back-hint">
@@ -78,8 +87,13 @@ export default {
     cartCount: Function,
     order: Object,          
     checkoutReady: Boolean,
+
+    isPlacingOrder: Boolean,
+    orderSuccessMessage: String,
+    orderErrorMessage: String,
   },
 };
+
 </script>
 
 <style scoped>
@@ -124,5 +138,17 @@ button:disabled {
   margin: 1rem 0;
   font-style: italic;
   color: #666;
+}
+
+.order-success {
+  margin: 0.5rem 0;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.order-error {
+  margin: 0.5rem 0;
+  color: #c0392b;
+  font-weight: 600;
 }
 </style>

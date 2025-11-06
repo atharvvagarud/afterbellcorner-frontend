@@ -53,6 +53,9 @@
         :cartCount="cartCount"
         :order="order"
         :checkoutReady="checkoutReady"
+        :isPlacingOrder="isPlacingOrder"             
+        :orderSuccessMessage="orderSuccessMessage"  
+        :orderErrorMessage="orderErrorMessage"
         @update-name="val => order.firstName = val"
         @update-phone="val => order.phone = val"
         @place-order="placeOrder"
@@ -107,6 +110,12 @@ export default {
         firstName: "",
         phone: "",
       },
+
+      //lags + messages for checkout
+      isPlacingOrder: false,          
+      orderSuccessMessage: "",        
+      orderErrorMessage: "", 
+      
     };
   },
 
@@ -266,23 +275,74 @@ methods: {
       }
     },
 
-    // placeOrder is passed to CartView and runs when the
-    // user clicks "Place Order". It also resets the app.
-    placeOrder() {
-      if (!this.checkoutReady) return;
+    // Called when "Place Order" is clicked in CartView
+    async placeOrder() {
+    
+    if (!this.checkoutReady) {
+      return;
+    }
 
-      alert("Order placed! 🎉");
+    
+    const name = this.order.firstName;     
+    const phone = this.order.phone;
 
-      // clear form data
+    
+    const items = this.cartProducts.map((product) => ({
+      id: product.id,
+      qty: this.cartCount(product.id),
+    }));
+
+    
+    this.isPlacingOrder = true;          
+    this.orderSuccessMessage = "";
+    this.orderErrorMessage = "";
+
+    try {
+      const response = await fetch("http://localhost:3000/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          phone,
+          items,
+        }),
+      });
+
+      if (!response.ok) {
+        
+        let errorText = `HTTP ${response.status}`;
+        try {
+          const body = await response.json();
+          if (body && body.error) {
+            errorText = body.error;
+          }
+        } catch (_) {}
+
+        throw new Error(errorText);
+      }
+
+      const data = await response.json();
+
+      
+      this.orderSuccessMessage = `Order placed successfully. Your reference ID is ${data.orderId}.`;
+
+      // clear cart + order form
+      this.cart = [];
       this.order.firstName = "";
       this.order.phone = "";
 
-      // clear all items in cart
-      this.cart = [];
-
-      // jump back to product browsing
+      // go back to product view
       this.showProduct = true;
-    },
+    } catch (err) {
+      console.error("Error placing order:", err);
+      this.orderErrorMessage =
+        "Sorry, there was a problem placing your order. Please try again.";
+    } finally {
+      this.isPlacingOrder = false;      
+    }
+  },
   }
 };
 </script>
