@@ -328,13 +328,15 @@ methods: {
       
       this.orderSuccessMessage = `Order placed successfully. Your reference ID is ${data.orderId}.`;
 
+      // update lesson spaces on the backend so availability is reduced
+      await this.updateLessonSpacesAfterOrder(items);
+
       // clear cart + order form
       this.cart = [];
       this.order.firstName = "";
       this.order.phone = "";
 
-      // go back to product view
-      this.showProduct = true;
+      
     } catch (err) {
       console.error("Error placing order:", err);
       this.orderErrorMessage =
@@ -342,7 +344,39 @@ methods: {
     } finally {
       this.isPlacingOrder = false;      
     }
-  },
+    },
+
+    // Update lesson inventory on backend and locally after an order
+    async updateLessonSpacesAfterOrder(items) {
+      // items = [{ id, qty }, ...] from the order
+      for (const item of items) {
+        const lesson = this.products.find(p => p.id === item.id);
+        if (!lesson) continue;
+
+        const newAvailable = lesson.availableInventory - item.qty;
+        // Guard: don’t send negative numbers
+        const safeAvailable = newAvailable < 0 ? 0 : newAvailable;
+
+        try {
+          await fetch(`http://localhost:3000/lessons/${item.id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              availableInventory: safeAvailable,
+            }),
+          });
+
+          // Update local copy too so UI matches backend
+          lesson.availableInventory = safeAvailable;
+        } catch (err) {
+          console.error(`Error updating spaces for lesson ${item.id}:`, err);
+          // You could optionally surface a small non-blocking error message here
+        }
+      }
+    }
+
   }
 };
 </script>
