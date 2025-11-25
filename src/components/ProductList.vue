@@ -1,42 +1,50 @@
 <template>
   <div>
 
-     <div class="search-row">
-      <label for="searchTerm">Search:</label>
-      <input
-        id="searchTerm"
-        type="text"
-        :value="searchTerm"
-        @input="$emit('update-search-term', $event.target.value)"
-        placeholder="Search by subject or location"
-      />
-    </div>
 
-    <div class="sort-row">
-      <label for="sortAttribute">Sort by:</label>
-    
-      <select
-        id="sortAttribute"
-        :value="sortAttribute"
-        @change="$emit('update-sort-attribute', $event.target.value)"
-      >
-      
-        <option value="subject">Subject</option>
-        <option value="location">Location</option>
-        <option value="price">Price</option>
-        <option value="spaces">Spaces</option>
-      </select>
+<!-- TOOLBAR: search + sort -->
 
-      <label class="sort-order-label" for="sortOrder">Order:</label>
-      <select
-        id="sortOrder"
-        :value="sortOrder"
-        @change="$emit('update-sort-order', $event.target.value)"
-      >
-        <option value="asc">Ascending</option>
-        <option value="desc">Descending</option>
-      </select>
-    </div>
+<div class="toolbar">
+
+  <!-- Search pill -->
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+
+    <input
+      class="search-input"
+      type="text"
+      :value="searchTerm"
+      @input="$emit('update-search-term', $event.target.value)"
+      placeholder="Search by subject or location"
+    />
+  </div>
+
+  <!-- Sort controls -->
+  <div class="sort-group">
+    <span class="sort-label">Sort</span>
+
+    <select
+      class="sort-select"
+      :value="sortAttribute"
+      @change="$emit('update-sort-attribute', $event.target.value)"
+    >
+      <option value="subject">Subject</option>
+      <option value="location">Location</option>
+      <option value="price">Price</option>
+      <option value="spaces">Spaces</option>
+    </select>
+
+    <select
+      class="sort-select"
+      :value="sortOrder"
+      @change="$emit('update-sort-order', $event.target.value)"
+    >
+      <option value="asc">Ascending</option>
+      <option value="desc">Descending</option>
+    </select>
+  </div>
+
+</div>
 
     <section class="lessons">
       <article

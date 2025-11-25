@@ -387,39 +387,5 @@ methods: {
 </script>
 
 <style scoped>
-
-header {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 1.2rem;
-}
-
-header button {
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: pointer;
-}
-
-.loading-msg {
-  text-align: center;
-  margin: 1rem 0;
-  font-style: italic;
-}
-
-.error-msg {
-  text-align: center;
-  margin: 1rem 0;
-  color: #c0392b;
-  font-weight: bold;
-}
-
+  
 </style>
