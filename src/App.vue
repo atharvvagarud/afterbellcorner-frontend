@@ -70,6 +70,9 @@
 import ProductList from "./components/ProductList.vue";
 import CartView from "./components/CartView.vue";
 
+//Central API base for the deployed backend
+const API_BASE = "https://afterbellcorner-backend.onrender.com";
+
 export default {
   name: "App",
   components: {
@@ -217,11 +220,12 @@ filteredProducts() {
 methods: {
 
     async fetchLessons() {
+    console.log("Fetching lessons from", `${API_BASE}/lessons`);
     this.isLoadingLessons = true;
     this.loadLessonsError = null;
 
     try {
-      const response = await fetch("http://localhost:3000/lessons");
+      const response = await fetch(`${API_BASE}/lessons`);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -298,7 +302,8 @@ methods: {
     this.orderErrorMessage = "";
 
     try {
-      const response = await fetch("http://localhost:3000/orders", {
+      const response = await fetch(`${API_BASE}/orders`, {
+
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -358,7 +363,7 @@ methods: {
         const safeAvailable = newAvailable < 0 ? 0 : newAvailable;
 
         try {
-          await fetch(`http://localhost:3000/lessons/${item.id}`, {
+          await fetch(`${API_BASE}/lessons/${item.id}`, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
