@@ -1,81 +1,134 @@
 <template>
-  <section>
-    <h2>Your Cart</h2>
-
+  <div class="cart-wrapper">
     
-    <div
-      class="cart-list-item"
-      v-for="product in cartProducts"
-      :key="product.id"
-    >
-      <div>
-        <strong>{{ product.title }}</strong>
-        <div class="cart-price">
-          £{{ product.price }} each
-        </div>
+    <div class="cart-section">
+      <h2 class="section-title">Your Cart ({{ cart.length }})</h2>
+
+      <div 
+        v-if="cart.length === 0" 
+        class="empty-cart-msg"
+      >
+        <i class="fas fa-shopping-basket fa-3x"></i>
+        <p>Your cart is empty.</p>
+        <button @click="$emit('toggle-checkout')" class="secondary-btn">
+          Go back to Lessons
+        </button>
       </div>
 
-    <div class="cart-qty">
-        Qty: {{ cartCount(product.id) }}
-      <button
-        @click="$emit('remove-one', product)"
-        aria-label="Remove one of {{ product.title }} from cart"
-        title="Remove one item"
+      <TransitionGroup 
+        v-else
+        name="list" 
+        tag="div" 
+        class="cart-list" 
       >
-      Remove one
-      </button>
+        <div
+          class="cart-item"
+          v-for="product in cartProducts"
+          :key="product.id"
+        >
+          <div class="item-details">
+            <span class="item-title">{{ product.title }}</span>
+            <span class="item-price">£{{ product.price }}</span>
+          </div>
+
+          <div class="item-actions stepper">
+            <button 
+              @click="$emit('remove-one', product)" 
+              class="step-btn minus"
+              title="Decrease quantity"
+            >
+              <i class="fas fa-minus"></i>
+            </button>
+            
+            <span class="qty-display">{{ cartCount(product.id) }}</span>
+            
+            <button 
+              @click="$emit('add-to-cart', product)" 
+              class="step-btn plus"
+              title="Increase quantity"
+              :disabled="spacesLeft(product) === 0"
+            >
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </TransitionGroup>
+      
     </div>
+
+    <div class="checkout-section">
+      <div class="checkout-card">
+        <h3>Checkout Details</h3>
+
+        <div v-if="orderSuccessMessage" class="msg success">
+          <i class="fas fa-check-circle"></i> {{ orderSuccessMessage }}
+        </div>
+        <div v-if="orderErrorMessage" class="msg error">
+          <i class="fas fa-exclamation-triangle"></i> {{ orderErrorMessage }}
+        </div>
+
+        <form @submit.prevent="$emit('place-order')">
+          
+          <div class="form-group">
+            <label>Name</label>
+            <div class="input-wrapper">
+              <span class="fas fa-user input-icon"></span>
+              <input
+                :value="order.firstName"
+                @input="$emit('update-name', $event.target.value.trim())"
+                placeholder="Enter your name"
+                required
+                pattern="[A-Za-z]+" 
+                title="Name must contain letters only"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Phone</label>
+            <div class="input-wrapper">
+              <span class="fas fa-phone input-icon"></span>
+              <input
+                :value="order.phone"
+                @input="$emit('update-phone', $event.target.value.replace(/[^0-9]/g,''))"
+                placeholder="Enter phone number"
+                required
+                pattern="[0-9]{7,}" 
+                title="Phone must be at least 7 digits"
+              />
+            </div>
+          </div>
+
+          <div class="order-summary">
+            <div class="summary-row">
+              <span>Total Items:</span>
+              <span>{{ cart.length }}</span>
+            </div>
+
+            <div class="summary-row total">
+              <span>Total To Pay:</span>
+              <span :key="totalPrice" class="total-price-text">
+                £{{ totalPrice }}
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            :disabled="!checkoutReady || isPlacingOrder"
+            class="checkout-btn"
+          >
+            {{ isPlacingOrder ? "Processing..." : "Place Order" }}
+          </button>
+        </form>
+        
+        <p class="back-hint">
+            Review your items before placing the order.
+        </p>
+      </div>
     </div>
 
-    <p v-if="cart.length === 0" class="empty-cart-msg">
-      Your cart is empty.
-    </p>
-
-
-    <hr />
-
-    <h3>Checkout Details</h3>
-
-    <!--order messages -->
-    <p v-if="orderSuccessMessage" class="order-success">
-      {{ orderSuccessMessage }}
-    </p>
-    
-    <p v-if="orderErrorMessage" class="order-error">
-      {{ orderErrorMessage }}
-    </p>
-
-    <p>
-      <strong>Name:</strong>
-      <input
-        :value="order.firstName"
-        @input="$emit('update-name', $event.target.value.trim())"
-        placeholder="First name only (letters)"
-      />
-    </p>
-
-    <p>
-      <strong>Phone:</strong>
-      <input
-        :value="order.phone"
-        @input="$emit('update-phone', $event.target.value.replace(/[^0-9]/g,''))"
-        placeholder="Numbers only"
-      />
-    </p>
-
-    
-    <button
-      :disabled="!checkoutReady || isPlacingOrder"
-      @click="$emit('place-order')"
-    >
-      {{ isPlacingOrder ? "Placing order..." : "Place Order" }}
-    </button>
-
-    <p class="back-hint">
-      <em>Click "Checkout" again to go back to products.</em>
-    </p>
-
-  </section>
+  </div>
 </template>
 
 <script>
@@ -85,70 +138,20 @@ export default {
     cart: Array,
     cartProducts: Array,
     cartCount: Function,
+    spacesLeft: Function, 
     order: Object,          
     checkoutReady: Boolean,
-
     isPlacingOrder: Boolean,
     orderSuccessMessage: String,
     orderErrorMessage: String,
   },
+  computed: {
+    totalPrice() {
+      return this.cart.reduce((total, id) => {
+        const product = this.cartProducts.find(p => p.id === id);
+        return total + (product ? product.price : 0);
+      }, 0);
+    }
+  }
 };
-
 </script>
-
-<style scoped>
-.cart-list-item {
-  border-bottom: 1px solid #ddd;
-  padding: 0.5rem 0;
-  display: flex;
-  justify-content: space-between;
-}
-
-.cart-price {
-  font-size: 0.8rem;
-}
-
-.cart-qty {
-  text-align: right;
-}
-
-.cart-qty button {
-  margin-left: 0.5rem;
-  font-size: 0.8rem;
-  padding: 0.1rem 0.4rem;
-}
-
-button {
-  transition: all 0.2s ease-in-out;
-}
-
-button:not(:disabled):hover {
-  background-color: #333;
-  color: white;
-  transform: scale(1.03);
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.empty-cart-msg {
-  text-align: center;
-  margin: 1rem 0;
-  font-style: italic;
-  color: #666;
-}
-
-.order-success {
-  margin: 0.5rem 0;
-  color: #2e7d32;
-  font-weight: 600;
-}
-
-.order-error {
-  margin: 0.5rem 0;
-  color: #c0392b;
-  font-weight: 600;
-}
-</style>

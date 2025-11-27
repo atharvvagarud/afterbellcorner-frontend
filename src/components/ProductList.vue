@@ -1,131 +1,70 @@
 <template>
   <div>
-
-
-<!-- TOOLBAR: search + sort -->
-
-<div class="toolbar">
-
-  <!-- Search pill -->
-  <div class="search-box">
-    <span class="search-icon">🔍</span>
-
-    <input
-      class="search-input"
-      type="text"
-      :value="searchTerm"
-      @input="$emit('update-search-term', $event.target.value)"
-      placeholder="Search by subject or location"
-    />
-  </div>
-
-  <!-- Sort controls -->
-  <div class="sort-group">
-    <span class="sort-label">Sort</span>
-
-    <select
-      class="sort-select"
-      :value="sortAttribute"
-      @change="$emit('update-sort-attribute', $event.target.value)"
-    >
-      <option value="subject">Subject</option>
-      <option value="location">Location</option>
-      <option value="price">Price</option>
-      <option value="spaces">Spaces</option>
-    </select>
-
-    <select
-      class="sort-select"
-      :value="sortOrder"
-      @change="$emit('update-sort-order', $event.target.value)"
-    >
-      <option value="asc">Ascending</option>
-      <option value="desc">Descending</option>
-    </select>
-  </div>
-
-</div>
-
     <section class="lessons">
-      <article
-        v-for="product in products"
-        :key="product.id"
-        class="product-card"
+  <article
+  v-for="product in products"
+  :key="product.id"
+  class="product-card group"
+>
+  <div class="product-image">
+    <img 
+      :src="getImagePath(product.title)" 
+      :alt="product.title"
+      class="card-img"
+    />
+    <div v-if="spacesLeft(product) === 0" class="sold-out-overlay">
+      <span>Sold Out</span>
+    </div>
+  </div>
+
+  <div class="product-content">
+    
+    <div class="card-header">
+      <h2 class="card-title">{{ product.title }}</h2>
+      <span class="card-price">£{{ product.price }}</span>
+    </div>
+
+    <div class="card-meta">
+      <span class="location">
+        <i class="fas fa-map-marker-alt"></i> {{ product.location }}
+      </span>
+      <div class="rating">
+        <span v-for="n in product.rating" :key="n">★</span>
+        <span v-for="n in 5 - product.rating" :key="n" class="text-muted">☆</span>
+      </div>
+    </div>
+
+    <p class="card-desc">{{ product.description }}</p>
+
+    <div class="card-footer">
+      <span 
+        v-if="spacesLeft(product) > 0"
+        class="inventory-badge" 
+        :class="spacesLeft(product) < 5 ? 'low-stock' : 'in-stock'"
       >
-        <div class="product-image">
-          IMG {{ product.id }}
-        </div>
+         {{ spacesLeft(product) < 5 ? `Only ${spacesLeft(product)} left!` : 'Available' }}
+      </span>
+      <span v-else class="h-6 block"></span> <button
+        v-if="canAddToCart(product)"
+        @click="$emit('add-to-cart', product)"
+        class="add-btn"
+      >
+        Add to Cart
+        <span v-if="cartCount(product.id) > 0" class="cart-count-badge">
+          ({{ cartCount(product.id) }})
+        </span>
+      </button>
 
-        <div class="product-info">
-
-          <!-- Subject + Icon -->
-          <h2>
-              <span class="fas fa-chalkboard-teacher lesson-icon"></span>
-              {{ product.title }}
-          </h2>
-
-          <p>{{ product.description }}</p>
-
-
-          <p><strong>Location:</strong> {{ product.location }}</p>
-          <p><strong>Price:</strong> £{{ product.price }}</p>
-          <p> <strong>Spaces:</strong> {{ spacesLeft(product) }} </p>
-
-
-           <div class="rating">
-            <span
-              v-for="n in product.rating"
-              :key="product.id + '-full-' + n"
-            >
-              ★
-            </span>
-            <span
-              v-for="n in 5 - product.rating"
-              :key="product.id + '-empty-' + n"
-            >
-              ☆
-            </span>
-          </div>
-
-          <p class="inventory-msg">
-              
-            <span v-if="spacesLeft(product) === 0">
-               All out!
-            </span>
-
-            <span v-else-if="spacesLeft(product) < 5">
-              Only
-              {{ spacesLeft(product) }}
-              left!
-            </span>
-
-            <span v-else>
-              Buy now!
-            </span>
-          </p>
-
-         <button
-            v-if="canAddToCart(product)"
-            @click="$emit('add-to-cart', product)"
-            aria-label="Add {{ product.title }} to cart"
-          >
-            Add to Cart
-          </button>
-
-          <button
-            v-else
-            disabled="disabled"
-            title="No spaces left for this session"
-            aria-label="No spaces left for {{ product.title }}"
-          >
-            Add to Cart
-          </button>
-
-          <p class="in-cart-label">
-            In cart: {{ cartCount(product.id) }}
-          </p>
-        </div>
-      </article>
+      <button
+        v-else
+        disabled
+        class="add-btn disabled"
+      >
+        Sold Out
+      </button>
+    </div>
+  </div>
+</article>
     </section>
   </div>
 </template>
@@ -142,95 +81,27 @@ export default {
     sortOrder: String,
     searchTerm: String,
   },
+  methods: {
+    getImagePath(title) {
+      if (!title) return '/images/math.jpg'; // Safety fallback
+      
+      const t = title.toLowerCase();
+      let filename = 'math.jpg'; // Default image
+
+      if (t.includes('math')) filename = 'math.jpg';
+      else if (t.includes('science')) filename = 'science.jpg';
+      else if (t.includes('writing')) filename = 'writing.jpg';
+      else if (t.includes('coding')) filename = 'coding.jpg';
+      else if (t.includes('art')) filename = 'art.jpg';
+      else if (t.includes('history')) filename = 'history.jpg';
+      else if (t.includes('geo')) filename = 'geo.jpg';
+      else if (t.includes('english')) filename = 'english.jpg';
+      else if (t.includes('music')) filename = 'music.jpg';
+      else if (t.includes('stress') || t.includes('wellbeing')) filename = 'wellbeing.jpg';
+
+      // Assumes images are in the "public/images" folder
+      return `images/${filename}`; 
+    }
+  }
 };
 </script>
-
-<style scoped>
-/* Component local styling */
-
-.product-card {
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  display: flex;
-  gap: 1rem;
-}
-
-.product-image {
-  width: 120px;
-  height: 120px;
-  background: #f3f3f3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  color: #555;
-}
-
-.product-info h2 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.1rem;
-}
-
-.rating {
-  color: #ffbf00;
-  font-size: 0.9rem;
-  line-height: 1;
-  margin-bottom: 0.5rem;
-}
-
-.inventory-msg {
-  font-size: 0.8rem;
-  font-weight: bold;
-  margin-top: 0.5rem;
-}
-
-
-.in-cart-label {
-  font-size: 0.8rem;
-  margin-top: 0.5rem;
-}
-
-.lesson-icon {
-  margin-right: 0.4rem;
-}
-
-.search-row {
-  margin-bottom: 0.75rem;
-  font-size: 0.9rem;
-}
-
-.search-row label {
-  margin-right: 0.5rem;
-  font-weight: bold;
-}
-
-.search-row input {
-  padding: 0.2rem 0.4rem;
-  font-size: 0.9rem;
-}
-
-button {
-  transition: all 0.2s ease-in-out;
-}
-
-button:not(:disabled):hover {
-  background-color: #333;
-  color: white;
-  transform: scale(1.03);
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.empty-cart-msg {
-  text-align: center;
-  margin: 1rem 0;
-  font-style: italic;
-  color: #666;
-}
-
-</style>
