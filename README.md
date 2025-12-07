@@ -1,5 +1,45 @@
-# Vue 3 + Vite
+# After Bell Corner – Frontend
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+This repository contains the **frontend application** for **After Bell Corner**, a lesson booking platform developed using **Vue.js 3** and **Vite**.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+The frontend allows users to:
+- Browse available lessons  
+- View remaining spaces  
+- Add lessons to a cart  
+- Place an order  
+- Receive a confirmation message with a generated order ID  
+
+It communicates with the Express.js backend (hosted on Render).
+
+---
+
+## 🌐 Live App (GitHub Pages)
+
+The project is deployed and accessible here:
+
+👉 **https://atharvvagarud.github.io/afterbellcorner-frontend/**
+
+---
+
+## 🖥 Tech Stack
+
+- **Vue.js 3** 
+- **Vite**
+- **JavaScript**
+- **Fetch API**
+- **GitHub Pages Deployment**
+- **REST API integration with Express.js backend**
+
+---
+
+## 🔧 Backend API Connection
+
+The frontend communicates with the backend via this base URL:
+
+```text
+https://afterbellcorner-backend.onrender.com
+```
+
+## 📚 Author
+
+Atharva Pravin Garud | BSc (Hons) Computer Science @ Middlesex University London
